@@ -5,7 +5,7 @@ const taskSchema = new Schema({
     title: { type: String, required: true }, 
     body: { type: String, required: true },
     deadline: { type: Date},
-    status: { type: Boolean, required: true },
+    status: { type: String, required: true, enum: ['To do', 'In Progress', 'Done'] },
     user: { type: Schema.Types.ObjectId, ref:'User' },
 })
 
