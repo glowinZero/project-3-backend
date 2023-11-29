@@ -24,8 +24,8 @@ require("./config")(app);
 const indexRoutes = require("./routes/index.routes");
 app.use("/api", indexRoutes);
 
-const projectRoutes = require('./routes/project.routes');
-app.use("/api", projectRoutes);
+const noteRoutes = require('./routes/note.routes');
+app.use("/api", noteRoutes);
 
 const taskRoutes = require('./routes/task.routes');
 app.use("/api", taskRoutes);

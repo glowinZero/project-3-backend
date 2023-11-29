@@ -10,36 +10,27 @@ const router = express.Router();
 
 const saltRounds = 10; 
 
-// POST '/auth/signup' - Creates a new user in the database
 router.post('/signup', (req,res)=>{
-    const {email, password, name} = req.body; 
-    /* doing object destructuring is the same as: 
-    const email = req.body.email; 
-    const password = req.body.password; 
-    const name = req.body.name; 
-    */
+    const {email, password, firstName, lastName, cohort, campus, manager, teacher, isStudent, task} = req.body; 
 
-    /*  "What if I don't have all the required fields with information?"  */
-    if(email === '' || password === '' || name === ''){
+    if(email === '' || password === '' || firstName === '' || lastName === '' || cohort === '' || campus === '' || manager === '' || teacher === '' || isStudent === ''){
         res.status(400).json({message: "Provide email, password and name."})
-        return; // -> return will stop the code. 
+        return;
     }
 
-    /* "What if I have an e-mail, but it's not a real e-mail? E.g.: user.com" */
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
     if(!emailRegex.test(email)){
         res.status(400).json({message: 'Provide a valid e-mail.'})
         return; 
     }
 
-    /* "What if I want password validation? In order to avoid pass like: "123" */
+
     const passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
     if(!passwordRegex.test(password)){
         res.status(400).json({message: 'Password must have at least 6 characters and contain 1 lowercase letter, 1 uppercase letter, 1 number'}); 
         return; 
     }
 
-    /* "What if a user already exists?" */
     User.findOne({email})
         .then((foundUser)=>{
             if(foundUser){
@@ -47,15 +38,15 @@ router.post('/signup', (req,res)=>{
                 return;
             }
 
-            /* Encrypt a Password */
+
             const salt = bcrypt.genSaltSync(saltRounds);
             const hashedPassword = bcrypt.hashSync(password, salt);
 
-            return User.create({email, password: hashedPassword, name});
+            return User.create({email, password: hashedPassword, firstName, lastName, cohort, campus, manager, teacher, isStudent, task});
         }).then((createdUser)=>{
-            const {email, name, _id} = createdUser;
+            const {email, firstName, _id, } = createdUser;
 
-            const user = {email, name, _id};
+            const user = {email, firstName, _id};
 
             res.status(201).json({user});
         })
@@ -65,11 +56,11 @@ router.post('/signup', (req,res)=>{
         })
 });
 
-// POST '/auth/login' - Verifies email and password and returns a JWT
+
 router.post('/login', (req, res)=>{
     const {email, password} = req.body; 
 
-    /* What if email and password were left blank? */
+
     if(email === '' || password === ''){
         res.status(400).json({message: 'Provide email and password.'}); 
         return;
@@ -77,13 +68,12 @@ router.post('/login', (req, res)=>{
 
     User.findOne({email})
         .then((foundUser)=>{
-            /* What if the user was not found? */
+
             if(!foundUser){
                 res.status(400).json({message: 'User not found'});
                 return; 
             }
 
-            /* What if the password is not correct? */
             const passwordCorrect = bcrypt.compareSync(password, foundUser.password);
 
             if(passwordCorrect){
@@ -96,7 +86,7 @@ router.post('/login', (req, res)=>{
                 )
                 return res.status(200).json({authToken: authToken});
             }
-            /* What if the password is not correct? */
+
             else{
                 return res.status(400).json({message: 'Password not found'});
             }
@@ -104,11 +94,87 @@ router.post('/login', (req, res)=>{
         .catch(()=> res.status(500).json({message: 'User not found.'}))
 }); 
 
-// GET '/auth/verify' - Used to verify JWT 
+
 router.get('/verify', isAuthenticated, (req,res)=>{
     res.status(200).json(req.payload);
 })
 
+router.get("/users/", (req, res) => {
+
+    User.find()
+      .then((user) => res.json(user))
+      .catch((error) => res.json(error));
+});
+
+router.put("/users/:userId", (req, res) => {
+    const { userId } = req.params;
+    const {email, password, firstName, lastName, cohort, campus, manager, teacher, isStudent, task} = req.body; 
+  
+    User.findByIdAndUpdate(userId, {email, password, firstName, lastName, cohort, campus, manager, teacher, isStudent, task}, { new: true })
+      .then(() => {
+        res.json({ message: "User Updated!" });
+      })
+      .catch(() => {
+        res.json({ message: "Failed to Update User." });
+      });
+});
+
+router.put("/users/:userId", async (req, res) => {
+    const { userId } = req.params;
+    const { email, password, firstName, lastName, cohort, campus, manager, teacher, isStudent, task } = req.body;
+
+    try {
+
+        const existingUser = await User.findById(userId);
+
+        if (!existingUser) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+
+        if (email) existingUser.email = email;
+        if (password) {
+
+            const isCurrentPasswordValid = await bcrypt.compare(password, existingUser.password);
+            if (!isCurrentPasswordValid) {
+                return res.status(401).json({ message: "Current password is not valid." });
+            }
+
+
+            const salt = bcrypt.genSaltSync(saltRounds);
+            const hashedPassword = bcrypt.hashSync(password, salt);
+            existingUser.password = hashedPassword;
+        }
+        if (firstName) existingUser.firstName = firstName;
+        if (lastName) existingUser.lastName = lastName;
+        if (cohort) existingUser.cohort = cohort;
+        if (campus) existingUser.campus = campus;
+        if (manager) existingUser.manager = manager;
+        if (teacher) existingUser.teacher = teacher;
+        if (isStudent !== undefined) existingUser.isStudent = isStudent;
+        if (task) existingUser.task = task;
+
+
+        await existingUser.save();
+
+        res.json({ message: "User Updated!" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Failed to Update User." });
+    }
+});
+
+router.delete("/users/:userId", (req, res) => {
+    const {userId} = req.params;
+
+    User.findByIdAndDelete(userId)
+        .then(()=>{
+            res.json({message: 'User deleted'});
+        })
+        .catch(()=>{
+            res.json({error: 'Failed to delete a User'});
+        })
+});
 
 
 module.exports = router; 

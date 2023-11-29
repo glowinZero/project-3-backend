@@ -9,10 +9,10 @@ const userSchema = new Schema(
     lastName: { type: String, required: true },
     cohort: {type: String, required: true},
     campus: {type: String, reqired: true},
-	  manager: { type: Schema.Types.ObjectId, ref:'Manager' },
-    teacher: { type: Schema.Types.ObjectId, ref:'teacher' },
+	  manager: { type: String },
+    teacher: { type: String},
     isStudent: {type: Boolean, required:true},
-    Task: [{ type: Schema.Types.ObjectId, ref:'Task' }]
+    task: [{ type: Schema.Types.ObjectId, ref:'Task' }]
   }
 );
 
