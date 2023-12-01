@@ -4,7 +4,7 @@ import { AuthContext } from "../../Context/auth.context";
 
 function HomePage() {
   const { isLoggedIn, user, logOut } = useContext(AuthContext);
-
+  
   return (
     <div>
       {isLoggedIn ? (
