@@ -39,7 +39,7 @@ router.post('/signup', (req,res)=>{
             }
 
 
-            const salt = bcrypt.genSaltSync(saltRounds);
+            const salt = bcrypt.genSaltSync(saltRounds); // Add to edit user (put)
             const hashedPassword = bcrypt.hashSync(password, salt);
 
             return User.create({email, password: hashedPassword, firstName, lastName, cohort, campus, manager, teacher, isStudent, task});
@@ -99,7 +99,7 @@ router.get('/verify', isAuthenticated, (req,res)=>{
     res.status(200).json(req.payload);
 })
 
-router.get("/users/", (req, res) => {
+router.get("/users", (req, res) => {
 
     User.find()
       .then((user) => res.json(user))

@@ -26,7 +26,7 @@ router.put("/tasks/:taskId", (req, res) => {
       .then(() => {
         res.json({ message: "Task Updated!" });
       })
-      .catch((error) => {
+      .catch(() => {
         res.json({ message: "Failed to Update Task." });
       });
   });
