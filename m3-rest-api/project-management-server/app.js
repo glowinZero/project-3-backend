@@ -13,7 +13,7 @@ const app = express();
 app.use(
     cors({
       // Add the URLs of allowed origins to this array
-      origin: ['http://localhost:5173'],
+      origin: ["https://resilient-torrone-c79f83.netlify.app"],
     })
   );
 
