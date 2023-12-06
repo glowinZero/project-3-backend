@@ -33,7 +33,6 @@ router.get("/notes/:noteId", (req, res) => {
 });
 
 
-
 router.put("/notes/:noteId", (req, res) => {
     const { noteId } = req.params;
     const {title, body, date, user: userId} = req.body; 
