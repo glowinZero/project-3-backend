@@ -6,7 +6,7 @@ const taskSchema = new Schema({
     body: { type: String, required: true },
     deadline: { type: Date},
     status: { type: String, required: true, enum: ['To do', 'In Progress', 'Done'] },
-    user: { type: Schema.Types.ObjectId, ref:'User' },
+    user: { type: String },
 })
 
 module.exports = model("Task", taskSchema); 

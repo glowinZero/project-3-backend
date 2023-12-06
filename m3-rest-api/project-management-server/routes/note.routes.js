@@ -5,10 +5,23 @@ const router = express.Router();
 
 const Note = require("../models/Note.model");
 
+router.get("/notes/:userId", (req, res)=>{
+  const {userId} = req.params;
+  Note.find({ user: userId })
+  .then((notes) => {
+    res.json(notes);
+  })
+  .catch((error) => {
+    console.error("Error fetching tasks:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  });
+})
+
 router.get("/notes", (req, res) => {
+
   Note.find()
-      .then((allNotes) => res.json(allNotes))
-      .catch((error) => res.json(error));
+    .then((note) => res.json(note))
+    .catch((error) => res.json(error));
 });
 
 router.get("/notes/:noteId", (req, res) => {
@@ -18,6 +31,8 @@ router.get("/notes/:noteId", (req, res) => {
       .then((note) => res.json(note))
       .catch((error) => res.json(error));
 });
+
+
 
 router.put("/notes/:noteId", (req, res) => {
     const { noteId } = req.params;

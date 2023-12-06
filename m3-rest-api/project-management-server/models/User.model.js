@@ -7,9 +7,9 @@ const userSchema = new Schema(
     password: { type: String, required:true}, 
     firstName: {type: String, required: true},
     lastName: { type: String, required: true },
-    cohort: {type: String, required: true},
-    campus: {type: String, reqired: true},
-	  manager: { type: String },
+    cohort: {type: String},
+    campus: {type: String},
+	  manager: { type: String},
     teacher: { type: String},
     isStudent: {type: Boolean, required:true},
     task: [{ type: Schema.Types.ObjectId, ref:'Task' }]
