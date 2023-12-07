@@ -11,9 +11,9 @@ const router = express.Router();
 const saltRounds = 10; 
 
 router.post('/signup', (req,res)=>{
-    const {email, password, firstName, lastName, cohort, campus, manager, teacher, isStudent, task} = req.body; 
+    const {email, password, firstName, lastName, cohort, campus, manager, teacher, role, isStudent, task} = req.body; 
 
-    if(email === '' || password === '' || firstName === '' || lastName === '' || cohort === '' || campus === '' || manager === '' || teacher === '' || isStudent === ''){
+    if(email === '' || password === '' || firstName === '' || lastName === '' || cohort === '' || campus === '' || manager === '' || teacher === '' || role === '' || isStudent === ''){
         res.status(400).json({message: "Provide email, password and name."})
         return;
     }
@@ -42,7 +42,7 @@ router.post('/signup', (req,res)=>{
             const salt = bcrypt.genSaltSync(saltRounds); // Add to edit user (put)
             const hashedPassword = bcrypt.hashSync(password, salt);
 
-            return User.create({email, password: hashedPassword, firstName, lastName, cohort, campus, manager, teacher, isStudent, task});
+            return User.create({email, password: hashedPassword, firstName, lastName, role, cohort, campus, manager, teacher, isStudent, task});
         }).then((createdUser)=>{
             const {email, firstName, _id, } = createdUser;
 
@@ -116,9 +116,9 @@ router.get("/users/:userId", (req, res) => {
 
 router.put("/users/:userId", (req, res) => {
     const { userId } = req.params;
-    const {email, password, firstName, lastName, cohort, campus, manager, teacher, isStudent, task} = req.body; 
+    const {email, password, firstName, lastName, cohort, campus, manager, teacher, role, isStudent, task} = req.body; 
   
-    User.findByIdAndUpdate(userId, {email, password, firstName, lastName, cohort, campus, manager, teacher, isStudent, task}, { new: true })
+    User.findByIdAndUpdate(userId, {email, password, firstName, lastName, cohort, role, campus, manager, teacher, isStudent, task}, { new: true })
       .then(() => {
         res.json({ message: "User Updated!" });
       })
@@ -129,7 +129,7 @@ router.put("/users/:userId", (req, res) => {
 
 router.put("/users/:userId", async (req, res) => {
     const { userId } = req.params;
-    const { email, password, firstName, lastName, cohort, campus, manager, teacher, isStudent, task } = req.body;
+    const { email, password, firstName, lastName, cohort, campus, manager, teacher, role, isStudent, task } = req.body;
 
     try {
 
@@ -159,6 +159,7 @@ router.put("/users/:userId", async (req, res) => {
         if (campus) existingUser.campus = campus;
         if (manager) existingUser.manager = manager;
         if (teacher) existingUser.teacher = teacher;
+        if (role) existingUser.role = role;
         if (isStudent !== undefined) existingUser.isStudent = isStudent;
         if (task) existingUser.task = task;
 

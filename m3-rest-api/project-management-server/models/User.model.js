@@ -11,6 +11,7 @@ const userSchema = new Schema(
     campus: {type: String},
 	  manager: { type: String},
     teacher: { type: String},
+    role: {type: String},
     isStudent: {type: Boolean, required:true},
     task: [{ type: Schema.Types.ObjectId, ref:'Task' }]
   }
