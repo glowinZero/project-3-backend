@@ -9,7 +9,7 @@ const app = express();
 
 app.use(
     cors({
-      origin: ["https://thekampus.netlify.app"],
+      origin: ["https://thekampus.netlify.app", "http://localhost:5173"],
     })
   );
 
